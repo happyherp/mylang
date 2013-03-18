@@ -79,7 +79,20 @@ prrepeat fabc fa pa pb = next (maybeSome (next pa pb (\a b -> (a,b ))))
                               pa
                               collect
     where collect abs a = foldr (\(a,b) c -> fabc a b c) (fa a) abs
-                              
+          
+
+--Parse things seperated by something which has no semantik meaning.
+pSep :: Parser a -> Parser b -> Parser [a]
+pSep pa pb= prrepeat (\a b c -> a:c) (:[]) pa pb
+
+--Parse things separated with kommas
+pKommaSep :: Parser a -> Parser [a]
+pKommaSep pa = pSep pa (next3 maybespace (atom ',') maybespace (\_ _ _ -> ()))
+
+
+maybespace = maybeSome (atom ' ')
+somespace  = some (atom ' ')
+                    
 --parses a single digit. 
 parseDigit =  convert  
                   (fromIntegral . digitToInt)

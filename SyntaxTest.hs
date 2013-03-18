@@ -77,9 +77,15 @@ callempty = TestCase (assertEqual "call" "ab"
               [(Call (Ref ab) [], "")] -> ab 
               e -> raisepErr e))
 
+lambdacase = TestCase (assertEqual "lambda" ("a", "a")
+                       (case norest parseExpr "function(a) return a" of
+                               [(Lambda [v] (Return (Ref v2)),"")] -> (v,v2) 
+                               e -> raisepErr e))
+
+
 runallexpr = runTestTT ( "All Expr Tests" ~: test testLst )
   where testLst = [concrete, ref, negation, multcase, addcase, 
-                   lassoc, braces, callcase,callempty]
+                   lassoc, braces, callcase,callempty, lambdacase]
 
 
 
@@ -93,7 +99,7 @@ seqcase = TestCase (assertEqual "assign" ("a", 2, "b", 3)
                            [(Sequence [
                                       Assignment a (Concrete b),
                                       Assignment c (Concrete d)
-                                     ], "")] -> (a,b,c,d)
+                                      ], "")] -> (a,b,c,d)
                            e -> raisepErr e))
 
 seqcase2 = TestCase (assertEqual "assign" True

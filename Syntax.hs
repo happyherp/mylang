@@ -34,7 +34,8 @@ pTwoOp = alts (map c [
 parseExprLvl2 = next (alts [pConcrete,
                             pRef,
                             pOneOpExpr,
-                            pBraces
+                            pBraces,
+                            pLambda
                            ])             pCall 
                      (\b                  c      ->
                      c b)
@@ -60,7 +61,7 @@ pCall = opt id (next4 maybespace (atom '(') pParams (atom ')')
                       (\_        _          params  _           foo -> 
                       Call foo params))
          
-
+-- use pSep here
 pParams :: Parser [Expression]   
 pParams = alt (convert (const []) maybespace)
               (prrepeat (\e _ ps-> e:ps)
@@ -69,9 +70,18 @@ pParams = alt (convert (const []) maybespace)
                         (atom ','))
 
 
+pLambda = next7
+  (atoms "function") maybespace (atom '(') vars (atom ')') somespace parseStmt
+  (\_                _          _          vars _          _         stmt      ->
+      Lambda vars stmt)
+   
+   where vars = alt (next3 maybespace (pKommaSep parseIdent) maybespace 
+                           (\_        vars                   _          ->vars))
+                    (convert (const []) maybespace)
+
+
 parseStmt :: Parser Statement
 parseStmt = parseStmtSeq
-
 parseStmtSeq = next pAtomStmt
                     (maybeSome (next (atom ';')
                                      pAtomStmt
@@ -89,9 +99,6 @@ pAtomStmt = next3 maybespace (alts
                               pAlt,
                               pLoop] )    maybespace 
                   (\_         s           _          -> s)
-
-
--- i be coding yeah yeah hackathon that rocks hacking away on -
  
 pAssign = next5 parseIdent  maybespace (atom '=') maybespace parseExpr 
                 (\ident     _          _          _          expr      ->
@@ -127,5 +134,4 @@ pLoop = next7
 parseIdent = some (alts chars)
    where chars = map atom (['A'..'Z']++['a'..'z'])
 pKey = parseIdent
-maybespace = maybeSome (atom ' ')
-somespace  = some (atom ' ')
+
