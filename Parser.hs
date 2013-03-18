@@ -21,10 +21,11 @@ next pa pb f e = [ (f matcha matchb,restb)
 
 --useful for longer sequences. 
 --Surely there is a better way to write this down.
-next3 p1 p2 p3 f          = next (next  p1 p2 f         ) p3 id
-next4 p1 p2 p3 p4 f       = next (next3 p1 p2 p3 f      ) p4 id
-next5 p1 p2 p3 p4 p5 f    = next (next4 p1 p2 p3 p4 f   ) p5 id
-next6 p1 p2 p3 p4 p5 p6 f = next (next5 p1 p2 p3 p4 p5 f) p6 id
+next3 p1 p2 p3 f             = next (next  p1 p2 f            ) p3 id
+next4 p1 p2 p3 p4 f          = next (next3 p1 p2 p3 f         ) p4 id
+next5 p1 p2 p3 p4 p5 f       = next (next4 p1 p2 p3 p4 f      ) p5 id
+next6 p1 p2 p3 p4 p5 p6 f    = next (next5 p1 p2 p3 p4 p5 f   ) p6 id
+next7 p1 p2 p3 p4 p5 p6 p7 f = next (next6 p1 p2 p3 p4 p5 p6 f) p7 id
 
 -- Try two diffrent parsers.
 alt :: Parser a -> Parser a -> Parser a 

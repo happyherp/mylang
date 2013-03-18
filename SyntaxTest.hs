@@ -57,7 +57,7 @@ lassoc = TestCase (assertEqual "mix" (4,5,6)
       e -> raisepErr e))
 
 braces = TestCase (assertEqual "mix" (4,5,6)
-    (case norest parseExpr "4 + (5 * 6)" of 
+    (case norest parseExpr "4 + (5 * 6  )" of 
       [(TwoOpInf (Concrete val) 
                  f 
                  (TwoOpInf (Concrete val2) 
