@@ -72,7 +72,21 @@ atoms :: String -> Parser String
 atoms (c:[]) = convert (:[]) (atom c)
 atoms (c:cs) = next (atom c) (atoms cs) (:)
 
+--Use the first parser once. Then, if possible use the second then the first parser as often as possible. Combine results with the given function from the right and use the second one for the last occurence of a.
+prrepeat :: (a->b->c->c) -> (a->c) -> Parser a -> Parser b -> Parser c
+prrepeat fabc fa pa pb = next (maybeSome (next pa pb (\a b -> (a,b ))))
+                              pa
+                              collect
+    where collect abs a = foldr (\(a,b) c -> fabc a b c) (fa a) abs
+                              
 
+
+{-next pa 
+                      (opt fa (next pb
+                                    (prrepeat fabc fa pa pb)
+                                    (\b c a -> )
+                      (\a f -> )
+-}
 
 --parses a single digit. 
 parseDigit =  convert  

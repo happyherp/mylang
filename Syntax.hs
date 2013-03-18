@@ -12,10 +12,15 @@ parseExpr = parseExprLvl1
 
 --parses one statement, or multiple connected by operators. 
 parseExprLvl1 = next parseExprLvl2 (maybeSome (opNexpr)) assocl
-   where opNexpr = next pTwoOp parseExprLvl2 (flip  . id)
+   where opNexpr = next4 maybespace 
+                         pTwoOp 
+                         maybespace
+                         parseExprLvl2 
+                         (\ _ op _ e2 e1-> op e1 e2)
          assocl = foldl (\e op -> op e) 
 
 --Parser with mapping of operators.
+pTwoOp :: Parser (Expression -> Expression -> Expression)
 pTwoOp = alts (map c [
                       ("+",  plus), 
                       ("-",  minus), 
@@ -26,11 +31,9 @@ pTwoOp = alts (map c [
 
 
 -- parse "smaller" things.
-parseExprLvl2 = next4 spaces 
-                      body 
-                      pCall
-                      spaces 
-                      (\_ b c _ ->c b)
+parseExprLvl2 = next  body 
+                      pCall 
+                      (\b c ->c b)
    where body = alts [pConcrete,
                       pRef,
                       pOneOpExpr,
@@ -54,7 +57,7 @@ pBraces = next3 (atom '(' )
                 (\_ e _ -> e) 
 
 --Any Expression may be a call of that expression, if followed by braces.
-pCall = opt id (next4 spaces
+pCall = opt id (next4 maybespace
                       (atom '(') 
                       pParams 
                       (atom ')') 
@@ -72,7 +75,8 @@ pParams = alts [always [],
 parseIdent = some (alts chars)
    where chars = map atom (['A'..'Z']++['a'..'z'])
 
-spaces = maybeSome (atom ' ')
+maybespace = maybeSome (atom ' ')
+somespace  = some (atom ' ')
 
 parseStmt :: Parser Statement
 parseStmt = parseStmtSeq
@@ -86,13 +90,13 @@ parseStmtSeq = next pAtomStmt
              plainOrSeq stmt stmts = Sequence (stmt:stmts)
 
 
-pAtomStmt = next3 spaces 
+pAtomStmt = next3 maybespace 
                   (alts [pAssign, pReturn, pObjAssign, pOption, pAlt] )
-                  spaces 
+                  maybespace 
                   (\_ s _ -> s)
 
 pAssign = next3 parseIdent 
-                (next spaces (atom '=') (\_ _  -> 1))  
+                (next maybespace (atom '=') (\_ _  -> 1))  
                 parseExpr 
                 (\i _ e -> Assignment i e)
 
@@ -102,7 +106,7 @@ pReturn = next (atoms "return") parseExpr (\_ e -> Return e)
 pObjAssign = next6 parseExpr 
                    (atom '.') 
                    pKey 
-                   spaces
+                   maybespace
                    (atom '=')
                    parseExpr
                    (\obj _ key _ _ val -> ObjAssignment obj key val )

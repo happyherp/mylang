@@ -13,35 +13,35 @@ raisepErr result = case result of
 
 
 concrete = TestCase (assertEqual "concrete" True
-                                 (case norest parseExpr "  234  " of 
+                                 (case norest parseExpr "234" of 
                                     [(Concrete 234,"")] -> True
                                     e -> raisepErr e))
 
 
 ref = TestCase (assertEqual "Reference" True
-                            (case norest parseExpr "  varname  " of 
+                            (case norest parseExpr "varname" of 
                                 [(Ref "varname", "")] -> True
                                 e -> raisepErr e))
 
 
 negation = TestCase (assertEqual "oneop negation" 5
-    (case norest parseExpr "  ~5" of 
+    (case norest parseExpr "~5" of 
       [(OneOp f (Concrete val), "")] -> val
       e -> raisepErr e))
 
 multcase = TestCase (assertEqual "twoop mult" (4,5)
-    (case norest parseExpr "  4 * 5  " of 
+    (case norest parseExpr "4 * 5" of 
       [(TwoOpInf (Concrete val) f (Concrete val2), rest)] -> (val, val2)
       e -> raisepErr e))
 
 addcase = TestCase (assertEqual "twoop add" (4,5)
-    (case norest parseExpr "  4 + 5  " of 
+    (case norest parseExpr "4 + 5" of 
       [(TwoOpInf (Concrete val) f (Concrete val2), rest)] -> (val, val2)
       e -> raisepErr e))
 
 -- in case i switch back to right association
 rassoc = TestCase (assertEqual "mix" (4,5,6)
-    (case norest parseExpr "  4 + 5 * 6 " of 
+    (case norest parseExpr "4 + 5 * 6" of 
       [(TwoOpInf (Concrete val) 
                  f 
                  (TwoOpInf (Concrete val2) 
@@ -50,14 +50,14 @@ rassoc = TestCase (assertEqual "mix" (4,5,6)
       e -> raisepErr e))
 
 lassoc = TestCase (assertEqual "mix" (4,5,6)
-    (case norest parseExpr "  4 + 5 * 6 " of 
+    (case norest parseExpr "4 + 5 * 6" of 
       [(TwoOpInf (TwoOpInf (Concrete val) f (Concrete val2)) 
                  f2 
                  (Concrete val3), rest)] -> (val, val2, val3)
       e -> raisepErr e))
 
 braces = TestCase (assertEqual "mix" (4,5,6)
-    (case norest parseExpr "  4 + (5 * 6) " of 
+    (case norest parseExpr "4 + (5 * 6)" of 
       [(TwoOpInf (Concrete val) 
                  f 
                  (TwoOpInf (Concrete val2) 
@@ -73,7 +73,7 @@ callcase = TestCase (assertEqual "call"
               e -> raisepErr e))
 
 callempty = TestCase (assertEqual "call" "ab"
-                                 (case norest parseExpr "ab()" of 
+                                 (case norest parseExpr "ab(  )" of 
               [(Call (Ref ab) [], "")] -> ab 
               e -> raisepErr e))
 
@@ -119,7 +119,7 @@ optioncase = TestCase (assertEqual "option" (1,2)
                            e -> raisepErr e))
 
 altcase = TestCase (assertEqual "option" (1,2,3)
-                      (case norest parseStmt "if 1 then return 2else return 3" of 
+                      (case norest parseStmt "if 1 then return 2 else return 3" of 
                            [(Alternative (Concrete c) 
                                          (Return (Concrete i))
                                          (Return (Concrete e)),"")] -> (c, i,e)

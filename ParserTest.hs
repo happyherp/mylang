@@ -58,6 +58,14 @@ testatoms = TestCase (assertEqual "testatoms"
                           [("abcd","")]
                           (atoms "abcd" "abcd"))
 
+testrrepeat = TestCase (assertEqual "testrepeat"
+                                   [("a a a","")]
+                                   (norest (prrepeat (\a b c -> a:(' ':c))
+                                                     (\ a -> [a])
+                                                     (atom 'a') 
+                                                     (atom ','))
+                                            "a,a,a"))
+
 runall = runTestTT ( "AllTests" ~: test testLst )
   where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax,
-                   testnext4, testatoms ]
+                   testnext4, testatoms, testrrepeat]
