@@ -1,7 +1,7 @@
 
 module RuntimeTest where 
 
-import ImpObj
+import Runtime
 import LangDef
 import Test.HUnit hiding (State)
 import Prelude hiding (negate)

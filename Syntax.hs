@@ -11,12 +11,12 @@ parseExpr :: Parser Expression
 parseExpr = parseExprLvl1
 
 --parses one statement, or multiple connected by operators. 
-parseExprLvl1 = next parseExprLvl2 (maybeSome (opNexpr)) assocl
-   where opNexpr = next4 maybespace 
-                         pTwoOp 
-                         maybespace
-                         parseExprLvl2 
-                         (\ _ op _ e2 e1-> op e1 e2)
+parseExprLvl1 = next parseExprLvl2 
+                     (maybeSome (opNexpr)) 
+                     assocl
+   where opNexpr = next4 maybespace pTwoOp maybespace parseExprLvl2 
+                         (\_        op     _          e2              e1
+                           -> op e1 e2)
          assocl = foldl (\e op -> op e) 
 
 --Parser with mapping of operators.
@@ -31,14 +31,14 @@ pTwoOp = alts (map c [
 
 
 -- parse "smaller" things.
-parseExprLvl2 = next  body 
-                      pCall 
-                      (\b c ->c b)
-   where body = alts [pConcrete,
-                      pRef,
-                      pOneOpExpr,
-                      pBraces
-                     ]
+parseExprLvl2 = next (alts [pConcrete,
+                            pRef,
+                            pOneOpExpr,
+                            pBraces
+                           ])             pCall 
+                     (\b                  c      ->
+                     c b)
+
 
 
 pConcrete = convert Concrete parseNumber
@@ -47,23 +47,18 @@ pRef  = convert Ref parseIdent
 
 pOneOpExpr = next pOneOp parseExpr id
 
-pOneOp = alts (map c [("~" ,negate), ("X", square)])
+pOneOp = alts (map c ops)
    where c (s, f) = convert (const f) (atoms s)
+         ops = [("~" ,negate), ("X", square)]
 
 
-pBraces = next5 (atom '(' ) 
-                maybespace
-                parseExprLvl1 
-                maybespace
-                (atom ')' ) 
-                (\_ _ e _ _ -> e) 
+pBraces = next5 (atom '(') maybespace parseExprLvl1 maybespace (atom ')') 
+                (\_        _          e             _          _          -> e) 
 
 --Any Expression may be a call of that expression, if followed by braces.
-pCall = opt id (next4 maybespace
-                      (atom '(') 
-                      pParams 
-                      (atom ')') 
-                      (\_ _ params _ foo -> Call foo params))
+pCall = opt id (next4 maybespace (atom '(') pParams (atom ')') 
+                      (\_        _          params  _           foo -> 
+                      Call foo params))
          
 
 pParams :: Parser [Expression]   
@@ -86,52 +81,44 @@ parseStmtSeq = next pAtomStmt
              plainOrSeq stmt stmts = Sequence (stmt:stmts)
 
 
-pAtomStmt = next3 maybespace 
-                  (alts [pAssign, pReturn, pObjAssign, pOption, pAlt] )
-                  maybespace 
-                  (\_ s _ -> s)
+pAtomStmt = next3 maybespace (alts 
+                             [pAssign, 
+                              pReturn, 
+                              pObjAssign, 
+                              pOption, 
+                              pAlt] )     maybespace 
+                  (\_         s           _          -> s)
 
-pAssign = next5 parseIdent 
-                maybespace 
-                (atom '=') 
-                maybespace 
-                parseExpr 
-                (\i _ _ _ e -> Assignment i e)
+pAssign = next5 parseIdent  maybespace (atom '=') maybespace parseExpr 
+                (\ident     _          _          _          expr      ->
+                Assignment ident expr)
 
-pReturn = next3 (atoms "return") somespace parseExpr (\_ _ e -> Return e)
+pReturn = next3 (atoms "return") somespace parseExpr 
+                (\_              _         e -> 
+                Return e)
+
+pObjAssign = next7 
+  parseExpr (atom '.') pKey maybespace (atom '=') (maybespace) parseExpr
+  (\obj     _          key  _          _          _            val      -> 
+  ObjAssignment obj key val )
 
 
-pObjAssign = next7 parseExpr 
-                   (atom '.') 
-                   pKey 
-                   maybespace
-                   (atom '=')
-                   (maybespace)
-                   parseExpr
-                   (\obj _ key _ _ _ val -> ObjAssignment obj key val )
-pKey = parseIdent
 
-pOption = next7 (atoms "if") 
-                somespace
-                parseExpr
-                somespace 
-                (atoms "then") 
-                somespace
-                parseStmt
-                (\_ _ e _ _ _ stmt -> Option e stmt)
+pOption = next7 
+ (atoms "if") somespace parseExpr somespace (atoms "then") somespace parseStmt
+ (\_          _         e         _         _              _         stmt     ->
+ Option e stmt)
 
-pAlt = next5 pOption
-             somespace
-             (atoms "else")
-             somespace
-             parseStmt
-             (\ (Option e stmtif) _ _ _ stmtelse -> Alternative e stmtif stmtelse)
+pAlt = next5 pOption somespace (atoms "else") somespace parseStmt
+             (\(Option e stmtif) 
+                     _         _              _         stmtelse    -> 
+             Alternative e stmtif stmtelse)
 
 
 
 --other parsers
 parseIdent = some (alts chars)
    where chars = map atom (['A'..'Z']++['a'..'z'])
-
+pKey = parseIdent
 maybespace = maybeSome (atom ' ')
 somespace  = some (atom ' ')
