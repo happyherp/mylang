@@ -64,10 +64,9 @@ pCall = opt id (next4 maybespace (atom '(') pParams (atom ')')
 -- use pSep here
 pParams :: Parser [Expression]   
 pParams = alt (convert (const []) maybespace)
-              (prrepeat (\e _ ps-> e:ps)
-                        (:[])
-                        (next3 maybespace parseExpr maybespace (\_ e _-> e))
-                        (atom ','))
+              (next3 maybespace (pKommaSep parseExpr) maybespace 
+                     (\_        exprs                 _          ->exprs))
+                    
 
 
 pLambda = next7
@@ -75,9 +74,10 @@ pLambda = next7
   (\_                _          _          vars _          _         stmt      ->
       Lambda vars stmt)
    
-   where vars = alt (next3 maybespace (pKommaSep parseIdent) maybespace 
+   where vars = alt (convert (const []) maybespace)
+                    (next3 maybespace (pKommaSep parseIdent) maybespace 
                            (\_        vars                   _          ->vars))
-                    (convert (const []) maybespace)
+                    
 
 
 parseStmt :: Parser Statement
