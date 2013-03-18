@@ -79,15 +79,6 @@ prrepeat fabc fa pa pb = next (maybeSome (next pa pb (\a b -> (a,b ))))
                               collect
     where collect abs a = foldr (\(a,b) c -> fabc a b c) (fa a) abs
                               
-
-
-{-next pa 
-                      (opt fa (next pb
-                                    (prrepeat fabc fa pa pb)
-                                    (\b c a -> )
-                      (\a f -> )
--}
-
 --parses a single digit. 
 parseDigit =  convert  
                   (fromIntegral . digitToInt)

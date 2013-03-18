@@ -63,14 +63,13 @@ pCall = opt id (next4 maybespace
                       (atom ')') 
                       (\_ _ params _ foo -> Call foo params))
          
+
 pParams :: Parser [Expression]   
-pParams = alts [always [], 
-                (convert (:[]) parseExpr), 
-                next3 parseExpr 
-                      (atom ',') 
-                      pParams 
-                      (\ p _ ps -> p:ps ) 
-               ]
+pParams = alt (convert (const []) maybespace)
+              (prrepeat (\e _ ps-> e:ps)
+                        (:[])
+                        (next3 maybespace parseExpr maybespace (\_ e _-> e))
+                        (atom ','))
 
 parseIdent = some (alts chars)
    where chars = map atom (['A'..'Z']++['a'..'z'])
