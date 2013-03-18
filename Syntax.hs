@@ -86,9 +86,13 @@ pAtomStmt = next3 maybespace (alts
                               pReturn, 
                               pObjAssign, 
                               pOption, 
-                              pAlt] )     maybespace 
+                              pAlt,
+                              pLoop] )    maybespace 
                   (\_         s           _          -> s)
 
+
+-- i be coding yeah yeah hackathon that rocks hacking away on -
+ 
 pAssign = next5 parseIdent  maybespace (atom '=') maybespace parseExpr 
                 (\ident     _          _          _          expr      ->
                 Assignment ident expr)
@@ -114,7 +118,10 @@ pAlt = next5 pOption somespace (atoms "else") somespace parseStmt
                      _         _              _         stmtelse    -> 
              Alternative e stmtif stmtelse)
 
-
+pLoop = next7 
+  (atoms "while") somespace parseExpr somespace (atoms "do") somespace parseStmt
+  (\_             _         cond      _         _            _         stmt      ->
+          Loop cond stmt)
 
 --other parsers
 parseIdent = some (alts chars)

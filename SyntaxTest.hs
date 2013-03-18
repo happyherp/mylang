@@ -119,15 +119,20 @@ optioncase = TestCase (assertEqual "option" (1,2)
                            e -> raisepErr e))
 
 altcase = TestCase (assertEqual "option" (1,2,3)
-                      (case norest parseStmt "if 1 then return 2 else return 3" of 
+    (case norest parseStmt "if 1 then return 2 else return 3" of 
                            [(Alternative (Concrete c) 
                                          (Return (Concrete i))
                                          (Return (Concrete e)),"")] -> (c, i,e)
                            e -> raisepErr e))
 
+loopcase = TestCase (assertEqual "option" (1,2)
+    (case norest parseStmt "while 1 do return 2" of 
+                           [(Loop (Concrete c) (Return (Concrete i)),"")] -> 
+                                      (c, i)
+                           e -> raisepErr e))
 
 runallstmt = runTestTT ( "All Stmt Tests" ~: test testLst )
   where testLst = [assign, seqcase, seqcase2, returncase, 
-                   obsassigncase,optioncase, altcase ]
+                   obsassigncase,optioncase, altcase, loopcase ]
 
 
