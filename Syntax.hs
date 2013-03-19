@@ -81,24 +81,13 @@ pLambda = next7
 
 
 parseStmt :: Parser Statement
-parseStmt = parseStmtSeq
-parseStmtSeq = next pAtomStmt
-                    (maybeSome (next (atom ';')
-                                     pAtomStmt
-                                     (\_ s -> s)))
-                    plainOrSeq
-       where plainOrSeq stmt [] = stmt
-             plainOrSeq stmt stmts = Sequence (stmt:stmts)
-
-
-pAtomStmt = next3 maybespace (alts 
-                             [pAssign, 
-                              pReturn, 
-                              pObjAssign, 
-                              pOption, 
-                              pAlt,
-                              pLoop] )    maybespace 
-                  (\_         s           _          -> s)
+parseStmt = alts [pAssign, 
+                  pReturn, 
+                  pObjAssign, 
+                  pOption, 
+                  pAlt,
+                  pLoop,
+                  pSequence] 
  
 pAssign = next5 parseIdent  maybespace (atom '=') maybespace parseExpr 
                 (\ident     _          _          _          expr      ->
@@ -129,6 +118,12 @@ pLoop = next7
   (atoms "while") somespace parseExpr somespace (atoms "do") somespace parseStmt
   (\_             _         cond      _         _            _         stmt      ->
           Loop cond stmt)
+
+
+pSequence = next4 (atom '{') stmts maybespace (atom '}') 
+                  (\_        stmts _          _          -> Sequence stmts)
+   where stmts = pSep (next maybespace parseStmt (\_ stmt -> stmt))
+                      (atom ';')
 
 --other parsers
 parseIdent = some (alts chars)

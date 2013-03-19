@@ -95,7 +95,7 @@ assign = TestCase (assertEqual "assign" ("a", 2)
                            e -> raisepErr e))
 
 seqcase = TestCase (assertEqual "assign" ("a", 2, "b", 3)
-                      (case norest parseStmt "a = 2; b = 3" of 
+                      (case norest parseStmt "{a = 2; b = 3}" of 
                            [(Sequence [
                                       Assignment a (Concrete b),
                                       Assignment c (Concrete d)
@@ -103,7 +103,7 @@ seqcase = TestCase (assertEqual "assign" ("a", 2, "b", 3)
                            e -> raisepErr e))
 
 seqcase2 = TestCase (assertEqual "assign" True
-                      (case norest parseStmt "a = 2; b = 3; c = 4" of 
+                      (case norest parseStmt "{a = 2; b = 3; c = 4}" of 
                            [(Sequence [a, b, c], "")] -> True
                            e -> raisepErr e))
 
