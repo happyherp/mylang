@@ -46,11 +46,16 @@ pConcrete = convert Concrete parseNumber
 
 pRef  = convert Ref parseIdent
 
-pOneOpExpr = next pOneOp parseExpr id
+pOneOpExpr = next3 pOneOp maybespace parseExpr
+                   (\op   _          expr      -> op expr)
 
 pOneOp = alts (map c ops)
    where c (s, f) = convert (const f) (atoms s)
-         ops = [("~" ,negate), ("X", square)]
+         ops = [
+                 ("~" ,negate), 
+                 ("X", square),
+                 ("not", notop)
+                ]
 
 
 pBraces = next5 (atom '(') maybespace parseExprLvl1 maybespace (atom ')') 

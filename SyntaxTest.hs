@@ -29,6 +29,11 @@ negation = TestCase (assertEqual "oneop negation" 5
       [(OneOp f (Concrete val), "")] -> val
       e -> raisepErr e))
 
+notcase = TestCase (assertEqual "oneop not" 5
+    (case norest parseExpr "not 5" of 
+      [(OneOp f (Concrete val), "")] -> val
+      e -> raisepErr e))
+
 multcase = TestCase (assertEqual "twoop mult" (4,5)
     (case norest parseExpr "4 * 5" of 
       [(TwoOpInf (Concrete val) f (Concrete val2), rest)] -> (val, val2)
@@ -84,8 +89,7 @@ lambdacase = TestCase (assertEqual "lambda" ("a", "a")
 
 
 runallexpr = runTestTT ( "All Expr Tests" ~: test testLst )
-  where testLst = [concrete, ref, negation, multcase, addcase, 
-                   lassoc, braces, callcase,callempty, lambdacase]
+  where testLst = [concrete, ref, negation, multcase, notcase, addcase, lassoc, braces, callcase,callempty, lambdacase]
 
 
 
