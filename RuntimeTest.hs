@@ -48,7 +48,7 @@ fak x = Sequence [
    Assignment "a" (Concrete x), 
    Assignment "b" one,
    Loop 
-     (equal one (Ref "a"))
+     (notop (equal one (Ref "a")))
      (Sequence [
        (Assignment "b" ((Ref "a") `mult` (Ref "b"))),
        (Assignment "a" ((Ref "a") `minus` one))

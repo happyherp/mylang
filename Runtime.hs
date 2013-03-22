@@ -57,10 +57,10 @@ exec (Alternative expr thenstatement elsestatement) state =
 exec (Option expr statement) state = exec (Alternative expr statement Noop) state
 
 exec (Loop expr statement) state  = if  isTrue condResult
-                                   then newstate 
-                                   else exec 
+                                   then exec 
                                          (Loop expr statement) 
                                          (exec statement newstate)
+                                   else newstate
       where (condResult, newstate) = eval expr state
 
 --A Return is just an assignment to a specific variable.. No Change in control flow.

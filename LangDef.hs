@@ -88,3 +88,8 @@ negate a = OneOp f a
 square :: Expression -> Expression 
 square a = OneOp f a 
   where f (MyInteger i) = MyInteger (i*i)
+
+notop = singleIntWrap f
+  where f 0 = 1
+        f x = 0
+
