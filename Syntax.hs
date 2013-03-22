@@ -46,7 +46,7 @@ pConcrete = convert Concrete parseNumber
 
 pRef  = convert Ref parseIdent
 
-pOneOpExpr = next3 pOneOp maybespace parseExpr
+pOneOpExpr = next3 pOneOp maybespace parseExprLvl2
                    (\op   _          expr      -> op expr)
 
 pOneOp = alts (map c ops)
