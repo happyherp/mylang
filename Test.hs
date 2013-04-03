@@ -33,7 +33,7 @@ braces2 = testexpr "braces2" "2 * (2 +3) -2" 8
 bracessimple = testexpr "braces simple" "( 3 )" 3
 
 fac = teststmt "fak" "r" 24 
-   "{i=4;r=1;while not i == 1 do {r = r*i; i=i-1}}"
+   "{i=4;r=1;while not (i == 1) do {r = r*i; i=i-1}}"
 
 runall = runTestTT ( "AllTests" ~: test testLst )
   where testLst = [simple, simple2, ops, braces, braces2, bracessimple, fac]
