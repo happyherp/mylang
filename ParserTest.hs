@@ -34,6 +34,10 @@ calc = TestCase (assertEqual "calculation"
                    [(4, "")]
                    (parseCalc "2+2"))
 
+filtertest = TestCase(assertEqual "filter" [(True, "")]
+       (pFilter id  (alts [always True, always False] ) ""))
+
+
 
 longsyntax = TestCase (assertEqual "long"
                          [("yo","")]
@@ -76,5 +80,4 @@ testkommasep = TestCase (assertEqual "testkommasep"
                                  
 
 runall = runTestTT ( "AllTests" ~: test testLst )
-  where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax,
-                   testnext4, testatoms, testrrepeat, testpsep, testkommasep]
+  where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax, filtertest, testnext4, testatoms, testrrepeat, testpsep, testkommasep]

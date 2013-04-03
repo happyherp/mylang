@@ -21,14 +21,16 @@ parseExprLvl1 = next parseExprLvl2
 
 --Parser with mapping of operators.
 pTwoOp :: Parser (Expression -> Expression -> Expression)
-pTwoOp = alts (map c [
-                      ("+",  plus), 
-                      ("-",  minus), 
-                      ("*",  mult), 
-                      ("==", equal)
-                     ] )
+pTwoOp = alts (map c twoOps )
             where c (s, f) = convert (const f) (atoms s)
 
+twoOps = [
+          ("+",  plus), 
+          ("-",  minus), 
+          ("*",  mult), 
+          ("==", equal),
+          ("same", equal)
+         ]
 
 -- parse "smaller" things.
 parseExprLvl2 = next (alts [pConcrete,
@@ -40,8 +42,6 @@ parseExprLvl2 = next (alts [pConcrete,
                      (\b                  c      ->
                      c b)
 
-
-
 pConcrete = convert Concrete parseNumber
 
 pRef  = convert Ref parseIdent
@@ -49,13 +49,14 @@ pRef  = convert Ref parseIdent
 pOneOpExpr = next3 pOneOp maybespace parseExprLvl2
                    (\op   _          expr      -> op expr)
 
-pOneOp = alts (map c ops)
+pOneOp = alts (map c oneOps)
    where c (s, f) = convert (const f) (atoms s)
-         ops = [
-                 ("~" ,negate), 
-                 ("X", square),
-                 ("not", notop)
-                ]
+
+oneOps = [
+        ("~" ,negate), 
+        ("X", square),
+        ("not", notop)
+       ]
 
 
 pBraces = next5 (atom '(') maybespace parseExprLvl1 maybespace (atom ')') 
@@ -124,11 +125,14 @@ pLoop = next7
   (\_             _         cond      _         _            _         stmt      ->
           Loop cond stmt)
 
-
 pSequence = next4 (atom '{') stmts maybespace (atom '}') 
                   (\_        stmts _          _          -> Sequence stmts)
    where stmts = pSep (next maybespace parseStmt (\_ stmt -> stmt))
                       (atom ';')
+
+
+keywords = map fst oneOps ++ map fst twoOps ++ [
+    "while", "do", "return", "if", "else" ]
 
 --other parsers
 parseIdent = some (alts chars)

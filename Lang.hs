@@ -7,7 +7,7 @@ import qualified Runtime
 
 {- High level commands for executing code -}
 
-parseIt :: Parser a -> String -> a
+parseIt :: Show a => Parser a -> String -> a
 parseIt parser s= case norest parser s of 
            [(result,"")] -> result
            [] -> error ("Could not parse "++s)

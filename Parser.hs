@@ -51,6 +51,12 @@ alt pa1 pa2 e = (pa1 e) ++ (pa2 e)
 convert :: (a->b) -> Parser a -> Parser b
 convert f p e =  map (\(match, rest) -> (f match, rest) ) (p e)
 
+
+--Remove interpretations that don't match a filter
+pFilter :: (a->Bool) -> Parser a -> Parser a
+pFilter f pa s= filter (f . fst) (pa s)
+
+
 --Never matches anything.
 never e = []
 
