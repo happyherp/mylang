@@ -23,6 +23,10 @@ ref = TestCase (assertEqual "Reference" True
                                 [(Ref "varname", "")] -> True
                                 e -> raisepErr e))
 
+noref = TestCase (assertEqual "no Reference" True
+                            (case norest parseExpr "not" of 
+                                [] -> True
+                                e -> raisepErr e))
 
 negation = TestCase (assertEqual "oneop negation" 5
     (case norest parseExpr "~5" of 
@@ -89,7 +93,7 @@ lambdacase = TestCase (assertEqual "lambda" ("a", "a")
 
 
 runallexpr = runTestTT ( "All Expr Tests" ~: test testLst )
-  where testLst = [concrete, ref, negation, multcase, notcase, addcase, lassoc, braces, callcase,callempty, lambdacase]
+  where testLst = [concrete, ref, noref, negation, multcase, notcase, addcase, lassoc, braces, callcase,callempty, lambdacase]
 
 
 

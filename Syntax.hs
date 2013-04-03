@@ -135,7 +135,9 @@ keywords = map fst oneOps ++ map fst twoOps ++ [
     "while", "do", "return", "if", "else" ]
 
 --other parsers
-parseIdent = some (alts chars)
-   where chars = map atom (['A'..'Z']++['a'..'z'])
+parseIdent = pFilter noKeyword (some (alts chars))
+   where noKeyword s = not (elem s keywords)
+         chars = map atom (['A'..'Z']++['a'..'z'])
+
 pKey = parseIdent
 
