@@ -7,10 +7,11 @@ Things I should add:
 - run script-files
 - write a tool that checks if a given syntax is always unambigious.
 - garbage collection
--better return statement
+- better return statement
 
 inwork:
--way to make rekursion work. current idea is some kind of let-statement that binds multiple things "at once"
 
 done:
+- let syntax
 - bind lambda-expressions to current state and run them in it, when they get called.
+- way to make rekursion work. introduced let statement

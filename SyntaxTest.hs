@@ -88,7 +88,7 @@ callempty = TestCase (assertEqual "call" "ab"
 
 lambdacase = TestCase (assertEqual "lambda" ("a", "a")
                        (case norest parseExpr "function(a) return a" of
-                               [(Lambda [v] (Return (Ref v2)),"")] -> (v,v2) 
+                               [(LambdaExpr ([v], (Return (Ref v2))),"")] -> (v,v2) 
                                e -> raisepErr e))
 
 
@@ -145,8 +145,19 @@ loopcase = TestCase (assertEqual "option" (1,2)
                                       (c, i)
                            e -> raisepErr e))
 
+letcase = TestCase (assertEqual "let" True
+    (case norest parseStmt "let {a = function() return 1}" of 
+                           [(Let [("a",([], Return (Concrete 1)))],"")] -> True
+                           e -> raisepErr e))
+
+letcase2 = TestCase (assertEqual "let" True
+    (case norest parseStmt "let {a = function() return 1;b=function() return 2}" of 
+                           [(Let [("a",([], Return (Concrete 1))),
+                                  ("b",([], Return (Concrete 2)))],"")] -> True
+                           e -> raisepErr e))
+
 runallstmt = runTestTT ( "All Stmt Tests" ~: test testLst )
   where testLst = [assign, seqcase, seqcase2, returncase, 
-                   obsassigncase,optioncase, altcase, loopcase ]
+                   obsassigncase,optioncase, altcase, loopcase, letcase, letcase2 ]
 
 

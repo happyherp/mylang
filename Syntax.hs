@@ -37,10 +37,11 @@ parseExprLvl2 = next (alts [pConcrete,
                             pRef,
                             pOneOpExpr,
                             pBraces,
-                            pLambda
+                            pLambdaE
                            ])             pCall 
                      (\b                  c      ->
                      c b)
+   where pLambdaE = (convert LambdaExpr pLambda)
 
 pConcrete = convert Concrete parseNumber
 
@@ -78,7 +79,7 @@ pParams = alt (convert (const []) maybespace)
 pLambda = next7
   (atoms "function") maybespace (atom '(') vars (atom ')') somespace parseStmt
   (\_                _          _          vars _          _         stmt      ->
-      Lambda vars stmt)
+      (vars, stmt))
    
    where vars = alt (convert (const []) maybespace)
                     (next3 maybespace (pKommaSep parseIdent) maybespace 
@@ -93,7 +94,8 @@ parseStmt = alts [pAssign,
                   pOption, 
                   pAlt,
                   pLoop,
-                  pSequence] 
+                  pSequence,
+                  pLet] 
  
 pAssign = next5 parseIdent  maybespace (atom '=') maybespace parseExpr 
                 (\ident     _          _          _          expr      ->
@@ -125,14 +127,18 @@ pLoop = next7
   (\_             _         cond      _         _            _         stmt      ->
           Loop cond stmt)
 
-pSequence = next4 (atom '{') stmts maybespace (atom '}') 
-                  (\_        stmts _          _          -> Sequence stmts)
-   where stmts = pSep (next maybespace parseStmt (\_ stmt -> stmt))
-                      (atom ';')
 
+pSequence = convert Sequence (pBlock parseStmt)
+
+pLet = next3 (atoms "let") somespace (pBlock pLetSingle) 
+             (\_           _         lets               -> Let lets)
+
+
+pLetSingle = next5 parseIdent maybespace (atom '=') maybespace pLambda
+                   (\id       _          _          _          lambda  -> (id, lambda)) 
 
 keywords = map fst oneOps ++ map fst twoOps ++ [
-    "while", "do", "return", "if", "else" ]
+    "while", "do", "return", "if", "else", "let", "function" ]
 
 --other parsers
 parseIdent = pFilter noKeyword (some (alts chars))
@@ -140,4 +146,17 @@ parseIdent = pFilter noKeyword (some (alts chars))
          chars = map atom (['A'..'Z']++['a'..'z'])
 
 pKey = parseIdent
+
+{- parses a curly braces block. Separated using ";"
+
+--->( { )---[maybespace]-->[something]--->[maybespace]---->( } )------>
+          |                                             |
+          \-----------( ; )<----------------------------/    
+          
+-}
+pBlock :: Parser a -> Parser [a]
+pBlock pa = next3 (atom '{') elems (atom '}') 
+                  (\_        elems  _          -> elems)
+   where elems = pSep (next3 maybespace pa maybespace (\_ elem _ -> elem))
+                      (atom ';')
 
