@@ -94,7 +94,16 @@ objectstmt = Sequence [
 objectcase = testStmt "test object" objectstmt 4 "b"
 
 
+letstmt = Sequence [
+             Let [("a", ([], Return (Call (Ref "b") []))),
+                  ("b", ([], Return (Concrete 10)))],
+             Return (Call (Ref "a") [])]
+
+letstmtcase = testStmt "test let" letstmt 10 returnvar 
+
+--Let [(VarId, Lambda)]
+
 
 runall = runTestTT ( "AllTests" ~: test testLst )
-  where testLst = [seqcase, altcase, exprcase, fakcase, fakrekcase, lambdadoublecase, objectcase, ctxcheckcase]
+  where testLst = [seqcase, altcase, exprcase, fakcase, fakrekcase, lambdadoublecase, objectcase, ctxcheckcase, letstmtcase]
 

@@ -2,9 +2,6 @@ module LangDef where
 
 import qualified Data.Map
 
-
-
-
 data Statement =  Noop 
                 | Assignment VarId Expression 
                 | Sequence [Statement] 
@@ -13,7 +10,7 @@ data Statement =  Noop
                 | Loop        Expression Statement
                 | Return      Expression
                 | ObjAssignment Expression ObjKey Expression
-                | Let [VarId] [Lambda]
+                | Let [(VarId, Lambda)]
                   deriving (Show)
 
 

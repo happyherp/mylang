@@ -11,6 +11,5 @@ Things I should add:
 inwork:
 -way to make rekursion work. current idea is some kind of let-statement that binds multiple things "at once"
 
-
 done:
 - bind lambda-expressions to current state and run them in it, when they get called.
