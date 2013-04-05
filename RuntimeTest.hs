@@ -57,15 +57,15 @@ fakcase = testStmt "testfak" (fak 4) 24 "b"
 
 
 fakrek x = Sequence [
-       Assignment "fak" (Lambda 
-                          ["n"] 
+       Assignment "fak" (LambdaExpr ( 
+                          ["n"], 
                           (Alternative (equal one (Ref "n"))
                                 (Return (Ref "n"))
                                 (Return (mult
                                           (Call (Ref "fak") [(Ref "n") `minus` one ])
                                           (Ref "n")
                                 ))
-                          )
+                          ))
                         ),
        Assignment "a" (Call (Ref "fak") [Concrete x])
                     ]
@@ -74,7 +74,7 @@ fakrekcase = testStmt "testfakrek" (fakrek 4) 24 "a"
 
 ctxcheck = Sequence [
               Assignment "a" one,
-              Assignment "foo" (Lambda [] (Return (Ref "a"))),
+              Assignment "foo" (LambdaExpr ([], (Return (Ref "a")))),
               Assignment "a" four,
               Assignment "b" (Call (Ref "foo") [])
                     ]
@@ -82,7 +82,7 @@ ctxcheckcase = testStmt "testctx" ctxcheck 1 "b"
 
 
 lambdadouble = Assignment "a" (Call 
-              (Lambda ["a"] (Return (two `mult` (Ref "a") )) )
+              (LambdaExpr (["a"], (Return (two `mult` (Ref "a")))) )
               [Concrete 4])
 lambdadoublecase = testStmt "test lambda" lambdadouble 8 "a"
 

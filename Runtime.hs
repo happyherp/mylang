@@ -113,7 +113,7 @@ eval (AccessObj expr key) state = evalWith f expr state
            object = justlook id heap "Object not found in heap"
            in justlook key object "key not found in object"
 
-eval (Lambda vars body) (State stack heap) = 
+eval (LambdaExpr (vars, body)) (State stack heap) = 
     (Function vars body stack, (State stack heap))
 
 eval (Call expr paramExprs) (State stack1 heap1) 

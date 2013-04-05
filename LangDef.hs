@@ -13,6 +13,7 @@ data Statement =  Noop
                 | Loop        Expression Statement
                 | Return      Expression
                 | ObjAssignment Expression ObjKey Expression
+                | Let [VarId] [Lambda]
                   deriving (Show)
 
 
@@ -23,7 +24,7 @@ data Expression =  Concrete Integer
                       (Value -> Value -> Value) 
                       Expression
                  | Ref VarId
-                 | Lambda [VarId] Statement
+                 | LambdaExpr Lambda
                  | Call Expression [Expression]
                  | New 
                  | AccessObj Expression ObjKey
@@ -48,6 +49,7 @@ type VarId = String
 type ObjId = Integer
 type Object = Data.Map.Map ObjKey Value
 type ObjKey = String
+type Lambda = ([VarId], Statement)
 
 newState = State (Top Data.Map.empty) Data.Map.empty
 
@@ -57,7 +59,7 @@ instance Show Expression where
   show (TwoOpInf left f right) = "|"++(show left) ++ " x " ++ (show right) ++ "|"
   show (Ref varid) = "Var#"++(show varid)
   show (Call foo params) = "Call"++(show foo)++" With "++ (show params)
-  show (Lambda vars body) = (show vars) ++ "->" ++ (show body)
+  show (LambdaExpr (vars, body)) = (show vars) ++ "->" ++ (show body)
   show New = "New"
   show (AccessObj expr key) = show expr ++ "." ++ key
 
