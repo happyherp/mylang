@@ -57,16 +57,11 @@ fakcase = testStmt "testfak" (fak 4) 24 "b"
 
 
 fakrek x = Sequence [
-       Assignment "fak" (LambdaExpr ( 
-                          ["n"], 
-                          (Alternative (equal one (Ref "n"))
+       Let [("fak", (["n"], (Alternative (equal one (Ref "n"))
                                 (Return (Ref "n"))
                                 (Return (mult
                                           (Call (Ref "fak") [(Ref "n") `minus` one ])
-                                          (Ref "n")
-                                ))
-                          ))
-                        ),
+                                          (Ref "n"))))))],
        Assignment "a" (Call (Ref "fak") [Concrete x])
                     ]
 fakrekcase = testStmt "testfakrek" (fakrek 4) 24 "a"
