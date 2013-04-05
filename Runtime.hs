@@ -78,6 +78,12 @@ exec (ObjAssignment src key to) state = case eval src state of
            _ -> error "Tried to assign non object"
 
 
+exec (Let pairs) (State stack heap) = case pairs of  
+   (varid, (vars, body)):[] -> 
+      let newstack = setVar stack varid (Function vars body newstack)
+      in State newstack heap
+
+
 getObj :: ObjId -> State -> Object
 getObj ref (State vartable heap) = justlook ref heap "object id unknown"
 

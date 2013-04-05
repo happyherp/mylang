@@ -93,6 +93,10 @@ objectstmt = Sequence [
              ]
 objectcase = testStmt "test object" objectstmt 4 "b"
 
+letsimplestmt = Sequence [
+             Let [("a", ([], Return (Concrete 10)))],
+             Return (Call (Ref "a") [])]
+letsimplestmtcase = testStmt "test let single" letsimplestmt 10 returnvar
 
 letstmt = Sequence [
              Let [("a", ([], Return (Call (Ref "b") []))),
@@ -105,5 +109,5 @@ letstmtcase = testStmt "test let" letstmt 10 returnvar
 
 
 runall = runTestTT ( "AllTests" ~: test testLst )
-  where testLst = [seqcase, altcase, exprcase, fakcase, fakrekcase, lambdadoublecase, objectcase, ctxcheckcase, letstmtcase]
+  where testLst = [seqcase, altcase, exprcase, fakcase, fakrekcase, lambdadoublecase, objectcase, ctxcheckcase,letsimplestmtcase, letstmtcase]
 
