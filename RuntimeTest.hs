@@ -105,9 +105,6 @@ letstmt = Sequence [
 
 letstmtcase = testStmt "test let" letstmt 10 returnvar 
 
---Let [(VarId, Lambda)]
-
-
 runall = runTestTT ( "AllTests" ~: test testLst )
   where testLst = [seqcase, altcase, exprcase, fakcase, fakrekcase, lambdadoublecase, objectcase, ctxcheckcase,letsimplestmtcase, letstmtcase]
 

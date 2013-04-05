@@ -77,12 +77,11 @@ exec (ObjAssignment src key to) state = case eval src state of
                         newObj = Data.Map.insert key value oldObj
            _ -> error "Tried to assign non object"
 
-
-exec (Let pairs) (State stack heap) = case pairs of  
-   (varid, (vars, body)):[] -> 
-      let newstack = setVar stack varid (Function vars body newstack)
-      in State newstack heap
-
+exec (Let pairs) (State stack heap) = State newstack heap
+   where newstack = foldr stackfold stack fcts
+         stackfold (id, foo) prevstack = setVar prevstack id foo
+         fcts = map fctconvert pairs
+         fctconvert (id, (vars, body)) = (id, Function vars body newstack)
 
 getObj :: ObjId -> State -> Object
 getObj ref (State vartable heap) = justlook ref heap "object id unknown"
