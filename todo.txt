@@ -1,12 +1,16 @@
 
 Things I should add:
+- remove stack-type as it is not needed the way calls work right now
 - Permit \r\n as separator everywhere spaces are permitted
 - Console Read/Write
 - Interactive shell
 - run script-files
 - write a tool that checks if a given syntax is always unambigious.
+- garbage collection
 
 inwork:
 -way to make rekursion work. current idea is some kind of let-statement that binds multiple things "at once"
 
+
 done:
+- bind lambda-expressions to current state and run them in it, when they get called.

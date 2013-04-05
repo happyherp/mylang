@@ -43,6 +43,9 @@ getVar (Sub parent table) id = case Data.Map.lookup id table of
 --Execute a Single Statement
 exec :: Statement -> State -> State
 
+--debugline
+--exec stmt state | trace ("exec stmt:" ++ show stmt ++ " state:" ++ show state) False = undefined
+
 exec Noop state = state
 
 exec (Assignment var expr) state = State (setVar stack var value) heap
@@ -116,12 +119,18 @@ eval (AccessObj expr key) state = evalWith f expr state
 eval (LambdaExpr (vars, body)) (State stack heap) = 
     (Function vars body stack, (State stack heap))
 
-eval (Call expr paramExprs) (State stack1 heap1) 
-  = case eval expr (State stack1 heap1) of
-    ((Function vars body stack), newstate) -> 
-        let State stack2 heap2 = exec body callstate
-            callstate = buildCallContext vars paramExprs newstate
-        in (getVar stack2 returnvar, State stack1 heap2)
+eval (Call expr paramExprs) (State stack1 heap1)
+  --eval to get Function-Value 
+  = case eval expr (State stack1 heap1) of  
+    ((Function vars body fstack), (State stack2 heap2)) -> 
+        -- evaluate the Arguments
+        let (arguments, State stack3 heap3) = multiEval paramExprs (State stack2 heap2)
+            -- create extend state of function with parameters
+            callstate = State (buildCallStack fstack vars arguments) heap3
+            -- call the function
+            State stackPostCall heapPostCall = exec body callstate
+        --Return return-value from call and the new heap
+        in (getVar stackPostCall returnvar, State stack1 heapPostCall)
 
     x -> error ("Tried to call non function " ++ (show x))
 
@@ -138,6 +147,9 @@ buildCallContext vars paramExprs state =
     State (push stack (Data.Map.fromList (zip vars paramVals))) heap
        where (paramVals, State stack heap) = multiEval paramExprs state
 
+buildCallStack :: Stack -> [VarId] -> [Value] -> Stack
+buildCallStack stack paramvars values = 
+     push stack (Data.Map.fromList (zip paramvars values))
 
 --Evaluate expressions while passing state arround.
 multiEval ::  [Expression] -> State -> ([Value], State)
