@@ -25,15 +25,19 @@ teststmt msg var expctd es = TestCase (assertEqual msg expctd result)
             x  -> error ("Multiple possible interpretations of "++ es ++ " Interpretations are :" ++ show x)
 
 
-simple = testexpr "simple" "1" 1
-simple2 = testexpr "simple2" "2+3 -2" 3
-ops = testexpr "calc with operators" "2 * 2 +3 -2" 5
-braces = testexpr "braces" "(2 * 2)+3 -2" 5
-braces2 = testexpr "braces2" "2 * (2 +3) -2" 8
+simple       = testexpr "simple" "1" 1
+simple2      = testexpr "simple2" "2+3 -2" 3
+ops          = testexpr "calc with operators" "2 * 2 +3 -2" 5
+braces       = testexpr "braces" "(2 * 2)+3 -2" 5
+braces2      = testexpr "braces2" "2 * (2 +3) -2" 8
 bracessimple = testexpr "braces simple" "( 3 )" 3
 
 fac = teststmt "fak" "r" 24 
    "{i=4;r=1;while not (i == 1) do {r = r*i; i=i-1}}"
 
+
+facrec = teststmt "fakrec" "r" 24
+  "{let {fak = function(a) if a == 1 then return 1 else return a*(fak (a-1))}; r = fak(4)}"
+
 runall = runTestTT ( "AllTests" ~: test testLst )
-  where testLst = [simple, simple2, ops, braces, braces2, bracessimple, fac]
+  where testLst = [simple, simple2, ops, braces, braces2, bracessimple, fac, facrec]
