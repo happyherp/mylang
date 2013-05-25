@@ -5,9 +5,9 @@ Things I should add:
 - Console Read/Write
 - Interactive shell
 - run script-files
-- write a tool that checks if a given syntax is always unambigious.
 - garbage collection
 - better return statement
+- write a tool that checks if a given syntax is always unambigious.
 
 inwork:
 
