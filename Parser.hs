@@ -1,9 +1,11 @@
+{- General Library for parsing strings. Code written in this library loosely resembles
+Syntax-Diagrams-}
 module Parser where
 
 import Data.List
 import Data.Char
 
-{- Type of a function that takesa String and parses it into something else, which may be anything. The result is a number of possible interpretations of the string together with the remaning chars -}
+{- Type of a function that takes a String and parses it into something else, which may be anything. The result is a number of possible interpretations of the string together with the remaining chars -}
 type Parser a = String -> [(a, String)]
 
 
@@ -35,8 +37,8 @@ next5 p1 p2 p3 p4 p5 f       = next (next4 p1 p2 p3 p4 f      ) p5 id
 next6 p1 p2 p3 p4 p5 p6 f    = next (next5 p1 p2 p3 p4 p5 f   ) p6 id
 next7 p1 p2 p3 p4 p5 p6 p7 f = next (next6 p1 p2 p3 p4 p5 p6 f) p7 id
 
-{- Try two diffrent parsers.
 
+{- Try two diffrent parsers.
 
 ------>[ a ]----->
    |          |
@@ -97,6 +99,7 @@ opt a p = alt (always a) p
 alts :: [Parser a] ->  Parser a
 alts = foldr alt never
 
+
 {-Use the parser at least one time, put content in list.
 
 ----->[ a ]------>
@@ -106,6 +109,7 @@ alts = foldr alt never
 -}
 some :: Parser a -> Parser [a]
 some p = next p (opt [] (some p)) (:)
+
 
 {- Some or no occurences of the parser.
 
@@ -117,6 +121,7 @@ some p = next p (opt [] (some p)) (:)
 maybeSome :: Parser a -> Parser [a]
 maybeSome p = alt (always []) (some p)
 
+
 {- match a string. Result is that string.
 
 ---->( <Somestring> )--->
@@ -125,6 +130,7 @@ maybeSome p = alt (always []) (some p)
 atoms :: String -> Parser String
 atoms (c:[]) = convert (:[]) (atom c)
 atoms (c:cs) = next (atom c) (atoms cs) (:)
+
 
 {-Use the first parser once. Then, if possible use the second then the first parser as often as possible. Combine results with the given function from the right and use the second one for the last occurence of a.
 

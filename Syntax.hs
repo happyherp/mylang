@@ -1,3 +1,5 @@
+{- Benutzt das Parser-Modul um Strings in Sprachelemente des LangDef-Moduls zu konvertieren-}
+
 module Syntax where
 
 import Prelude hiding (negate)
@@ -68,7 +70,7 @@ pCall = opt id (next4 maybespace (atom '(') pParams (atom ')')
                       (\_        _          params  _           foo -> 
                       Call foo params))
          
--- use pSep here
+-- TODO: use pSep here
 pParams :: Parser [Expression]   
 pParams = alt (convert (const []) maybespace)
               (next3 maybespace (pKommaSep parseExpr) maybespace 

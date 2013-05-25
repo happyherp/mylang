@@ -1,3 +1,4 @@
+{- Internal Definition of the Language. This serves as the interface between syntax and runtime of the language. -}
 module LangDef where
 
 import qualified Data.Map
@@ -79,7 +80,7 @@ singleIntWrap :: (Integer -> Integer) -> Expression -> Expression
 singleIntWrap f o = OneOp wrap o
    where wrap (MyInteger x) = MyInteger (f x)
 
---rewrite using singleIntWrap
+--TODO: rewrite using singleIntWrap
 negate :: Expression -> Expression
 negate a = OneOp f a
   where f (MyInteger i) = MyInteger (-i) 

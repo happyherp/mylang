@@ -1,3 +1,4 @@
+{- Test the Parser-Module-}
 module ParserTest where 
 
 import Test.HUnit

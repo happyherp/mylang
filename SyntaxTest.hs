@@ -1,4 +1,4 @@
-
+{- Tests that strings are converted into language elements.-}
 module SyntaxTest where
 
 import Test.HUnit hiding (State)
