@@ -1,4 +1,4 @@
-
+{- This Modules handles the execution of statements and evaluation of expressions  -}
 module Runtime where
 
 import qualified Data.Map

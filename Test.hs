@@ -1,5 +1,4 @@
-
-{- Module that does complete Tests Syntax as well as Runtime by testing taking strings, parsing them, executing the result and then checking the result of the computation-}
+{- Module that tests Syntax as well as Runtime by taking strings, parsing them, executing the result and then checking the result of the computation-}
 module Test where
 
 import Test.HUnit
