@@ -78,7 +78,13 @@ testpsep = TestCase (assertEqual "testsep"
 testkommasep = TestCase (assertEqual "testkommasep"
                                  [("aaa","")]
                                  (norest (pKommaSep (atom 'a')) "a , a,a"))
-                                 
+
+testNextP = TestCase (
+  assertEqual "testNextP"
+            [("bbbb","b")]
+            (nextP (some (atom 'a'))
+                   (\as -> atoms (replicate (2*(length as)) 'b'))
+                   "aabbbbb"))             
 
 runall = runTestTT ( "AllTests" ~: test testLst )
-  where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax, filtertest, testnext4, testatoms, testrrepeat, testpsep, testkommasep]
+  where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax, filtertest, testnext4, testatoms, testrrepeat, testpsep, testkommasep, testNextP]

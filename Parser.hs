@@ -29,6 +29,16 @@ next pa pb f e = [ (f matcha matchb,restb)
                      |(matcha, resta) <- pa e, 
                       (matchb, restb) <- pb resta ]
 
+{- Parse one thing, then use the result to create a new parser and use that one
+
+  ------>[ a ]----->[ b ]---->
+
+ -}
+nextP :: Parser a -> (a -> Parser b) -> Parser b
+nextP pa fb e= [ r | (matcha, resta) <- pa e,
+                     r               <- fb matcha resta]
+
+
 --useful for longer sequences. 
 --Surely there is a better way to write this down.
 next3 p1 p2 p3 f             = next (next  p1 p2 f            ) p3 id
@@ -128,6 +138,7 @@ maybeSome p = alt (always []) (some p)
 
 -}
 atoms :: String -> Parser String
+atoms [] = \s -> [([],s)]
 atoms (c:[]) = convert (:[]) (atom c)
 atoms (c:cs) = next (atom c) (atoms cs) (:)
 
