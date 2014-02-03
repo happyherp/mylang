@@ -84,7 +84,17 @@ testNextP = TestCase (
             [("bbbb","b")]
             (nextP (some (atom 'a'))
                    (\as -> atoms (replicate (2*(length as)) 'b'))
-                   "aabbbbb"))             
+                   "aabbbbb"))   
+
+
+testLeftRec = TestCase ( 
+   assertEqual "testLeftRec"
+               [(0, "")]
+               (norest (pLeftRecur parseNumber
+                                   (next (atom '-') parseNumber (\ _ s a-> a-s))
+                                   (\d f -> f d))
+                       "10-5-5"))  
+ 
 
 runall = runTestTT ( "AllTests" ~: test testLst )
-  where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax, filtertest, testnext4, testatoms, testrrepeat, testpsep, testkommasep, testNextP]
+  where testLst = [a,b, ab, aaltb, digit, number, calc, longsyntax, filtertest, testnext4, testatoms, testrrepeat, testpsep, testkommasep, testNextP, testLeftRec]

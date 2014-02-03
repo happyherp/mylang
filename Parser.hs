@@ -182,6 +182,22 @@ pKommaSep pa = pSep pa (next3 maybespace (atom ',') maybespace (\_ _ _ -> ()))
 
 maybespace = maybeSome (atom ' ')
 somespace  = some (atom ' ')
+
+
+{- Parser for left-recursion.
+Tries the first parser, or Recurses and then the second parser. Then uses the function
+to combine the results.
+
+---->[ a ]------------>
+  |                 |
+   ->[ r ]-->[ b ]--^
+
+Where r is the recursion.
+
+-}
+pLeftRecur :: Parser a -> Parser b -> (a -> b -> a) -> Parser a
+pLeftRecur a b f = next a (maybeSome b) (foldl f)
+
                     
 --parses a single digit. 
 parseDigit =  convert  
